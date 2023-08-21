@@ -14,6 +14,9 @@ public class LevelController : MonoBehaviour
     {
         gridLogic = new GridLogic<GameObject>(settings);
         gridLogic.CreateGrid(OnSpawnCell);
+
+        Destroy(gridLogic.gridCells[gridLogic.GetCellFromGrid(4, 0)]);
+        Destroy(gridLogic.gridCells[gridLogic.GetCellFromGrid(3, settings.Size.y - 1)]);
     }
 
     private void OnSpawnCell(Cell cell, Vector2 position)

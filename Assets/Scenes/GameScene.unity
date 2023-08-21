@@ -459,7 +459,7 @@ MonoBehaviour:
   nodePrefab: {fileID: 186786306925711193, guid: d75e67854f9f67840b224fc117ad8f4e,
     type: 3}
   settings:
-    gridSize: {x: 10, y: 10}
+    gridSize: {x: 8, y: 8}
     cellSpacing: 1.1
     cellScale: 1
     anchor: {x: 0, y: 0}
