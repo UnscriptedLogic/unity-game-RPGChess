@@ -7,12 +7,21 @@ public static class GameManager
 {
     private static bool doLogging = false;
 
-    private static List<Unit> playerTeam;
+    private static List<List<Unit>> playerWaves;
     private static List<List<Unit>> enemyWaves;
 
-    public static void SetPlayerTeam(List<Unit> playerTeam)
+    public static List<List<Unit>> PlayerTeam => playerWaves;
+    public static List<List<Unit>> EnemyWaves => enemyWaves;
+
+    public static void SetPlayerWave(List<List<Unit>> playerWaves)
     {
-        GameManager.playerTeam = playerTeam;
+        GameManager.playerWaves = playerWaves;
+        LogSender();
+    }
+
+    public static void SetEnemyWave(List<List<Unit>> enemyWaves)
+    {
+        GameManager.enemyWaves = enemyWaves;
         LogSender();
     }
 
