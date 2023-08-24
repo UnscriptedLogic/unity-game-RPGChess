@@ -47,4 +47,11 @@ public class Unit : ScriptableObject
 
     public Stats BaseStats => baseStats;
     public GameObject ObjectPrefab => objectPrefab;
+
+    public GameObject CreateUnit()
+    {
+        GameObject unitObject = Instantiate(objectPrefab);
+        unitObject.GetComponent<UnitBehaviour>().Initialize(baseStats);
+        return unitObject;
+    }
 }

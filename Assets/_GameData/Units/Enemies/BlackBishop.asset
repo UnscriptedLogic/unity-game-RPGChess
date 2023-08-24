@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: BlackBishop
   m_EditorClassIdentifier: 
   baseStats:
-    health: 0
-    damage: 0
-    speed: 0
+    health: 3
+    damage: 1
+    speed: 4
   objectPrefab: {fileID: 8254813440698052572, guid: 627b0263d752b5d4eb2c893b16108696,
     type: 3}

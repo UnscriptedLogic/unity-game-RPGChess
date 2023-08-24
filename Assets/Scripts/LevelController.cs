@@ -18,6 +18,9 @@ public class LevelController : MonoBehaviour
     private List<UnitBehaviour> playerTeam;
     private List<UnitBehaviour> enemyTeam;
 
+    [Header("Turn System Settings")]
+    private List<Turn> turns;
+
     private void Start()
     {
         //Grid Creation
@@ -39,11 +42,46 @@ public class LevelController : MonoBehaviour
         {
             for (int i = 0; i < teamData.Count; i++)
             {
-                GameObject unit = Instantiate(teamData[i].ObjectPrefab);
+                GameObject unit = teamData[i].CreateUnit();
                 unit.transform.position = gridLogic.gridCells[gridLogic.GetCellFromGrid((i * 3) + xOffset, yOffset)].transform.position + (Vector3.up * instantiateOffset);
                 unit.transform.forward = faceDir;
+                team.Add(unit.GetComponent<UnitBehaviour>());
             }
         }
+
+        //Turn System
+        turns = new List<Turn>();
+        for (int i = 0; i < playerTeam.Count; i++)
+        {
+            turns.Add(new Turn(
+                    actionValue: playerTeam[i].Stats.Speed,
+                    turnObject: playerTeam[i].gameObject
+                ));
+        }
+
+        for (int i = 0; i < enemyTeam.Count; i++)
+        {
+            turns.Add(new Turn(
+                    actionValue: enemyTeam[i].Stats.Speed,
+                    turnObject: enemyTeam[i].gameObject
+                ));
+        }
+
+        turns.Sort((turnA, turnB) =>
+        {
+            if (turnA.ActionValue < turnB.ActionValue)
+            {
+                return 1;
+            }
+            else if (turnA.ActionValue > turnB.ActionValue)
+            {
+                return -1;
+            } 
+            else
+            {
+                return 0;
+            }
+        });
     }
 
     private void OnSpawnCell(Cell cell, Vector2 position)
