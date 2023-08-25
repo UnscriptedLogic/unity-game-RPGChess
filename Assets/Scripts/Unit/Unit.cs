@@ -3,6 +3,14 @@
 [CreateAssetMenu(fileName = "New Unit", menuName = "ScriptableObjects/Create New Unit")]
 public class Unit : ScriptableObject
 {
+    public enum MovementType
+    {
+        Bishop,
+        Knight,
+        Rook,
+        None
+    }
+
     [System.Serializable]
     public class Stats
     {
@@ -42,16 +50,18 @@ public class Unit : ScriptableObject
         }
     }
 
+    [SerializeField] private MovementType movementType;
     [SerializeField] private Stats baseStats;
     [SerializeField] private GameObject objectPrefab;
 
     public Stats BaseStats => baseStats;
     public GameObject ObjectPrefab => objectPrefab;
+    public MovementType UnitMovementType => movementType;
 
     public GameObject CreateUnit()
     {
         GameObject unitObject = Instantiate(objectPrefab);
-        unitObject.GetComponent<UnitBehaviour>().Initialize(baseStats);
+        unitObject.GetComponent<UnitBehaviour>().Initialize(this, baseStats);
         return unitObject;
     }
 }
