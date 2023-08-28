@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c699c78abbb88a41991d64450196456, type: 3}
   m_Name: BlackKnight
   m_EditorClassIdentifier: 
+  movementType: 1
   baseStats:
     health: 3
     damage: 2
-    speed: 5
+    speed: 3
   objectPrefab: {fileID: 8254813440698052572, guid: dbf676ddea4770c488902e0a6c505552,
     type: 3}

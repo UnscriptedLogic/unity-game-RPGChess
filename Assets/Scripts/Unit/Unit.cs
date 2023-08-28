@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnscriptedLogic;
 
 [CreateAssetMenu(fileName = "New Unit", menuName = "ScriptableObjects/Create New Unit")]
 public class Unit : ScriptableObject
@@ -18,15 +19,49 @@ public class Unit : ScriptableObject
         [SerializeField] private int damage;
         [SerializeField] private int speed;
 
-        public int Health => health;
-        public int Damage => damage;
-        public int Speed => speed;
+        private IntHandler healthHandler;
+        private IntHandler damageHandler;
+        private IntHandler speedHandler;
+
+        public int Health => healthHandler.Value;
+        public int Damage => damageHandler.Value;
+        public int Speed => speedHandler.Value;
+
+        public IntHandler HealthHandler => healthHandler;
+        public IntHandler DamageHandler => damageHandler;
+        public IntHandler SpeedHandler => speedHandler;
+
+        public Stats()
+        {
+            healthHandler = new IntHandler(health);
+            damageHandler = new IntHandler(damage);
+            speedHandler = new IntHandler(speed);
+
+            healthHandler.SetMinimum(0);
+            damageHandler.SetMinimum(0);
+            speedHandler.SetMaximum(0);
+        }
 
         public Stats(int health = 0, int damage = 0, int speed = 0)
         {
-            this.health = health;
-            this.damage = damage;
-            this.speed = speed;
+            healthHandler = new IntHandler(health);
+            damageHandler = new IntHandler(damage);
+            speedHandler = new IntHandler(speed);
+
+            healthHandler.SetMinimum(0);
+            damageHandler.SetMinimum(0);
+            speedHandler.SetMaximum(0);
+        }
+
+        public Stats(Stats stats)
+        {
+            healthHandler = new IntHandler(stats.health);
+            damageHandler = new IntHandler(stats.damage);
+            speedHandler = new IntHandler(stats.speed);
+
+            healthHandler.SetMinimum(0);
+            damageHandler.SetMinimum(0);
+            speedHandler.SetMaximum(0);
         }
 
         public static Stats operator +(Stats a, Stats b)

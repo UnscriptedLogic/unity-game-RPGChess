@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c699c78abbb88a41991d64450196456, type: 3}
   m_Name: WhiteRook
   m_EditorClassIdentifier: 
+  movementType: 2
   baseStats:
     health: 5
-    damage: 3
-    speed: 3
+    damage: 2
+    speed: 1
   objectPrefab: {fileID: 8421353366993549153, guid: 15c381e8201e4aa449c49bf5724b225b,
     type: 3}

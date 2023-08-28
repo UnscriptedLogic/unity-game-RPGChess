@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnscriptedLogic;
 using UnscriptedLogic.Experimental.Generation;
 
 public class LevelController : MonoBehaviour
@@ -28,6 +29,7 @@ public class LevelController : MonoBehaviour
 
     [Header("Turn System Settings")]
     private List<Turn> turns;
+    [SerializeField] private Color highlightColor;
 
     private void Start()
     {
@@ -110,17 +112,22 @@ public class LevelController : MonoBehaviour
         for (int i = 0; i < turns.Count; i++)
         {
             UnitBehaviour unitBehaviour = turns[i].TurnObject.GetComponent<UnitBehaviour>();
-            List<List<Cell>> cellSet = unitBehaviour.GetPossibleMovementTiles(allTeam.GetUnitCellPosition(unitBehaviour), settings, gridLogic.gridCells);
+            List<List<Cell>> cellSet = unitBehaviour.GetPossibleMovementTiles(gridLogic.GetCellFromWorldPosition(new Vector2(unitBehaviour.transform.position.x, unitBehaviour.transform.position.z)), settings, gridLogic.gridCells);
 
             for (int x = 0; x < cellSet.Count; x++)
             {
                 for (int y = 0; y < cellSet[x].Count; y++)
                 {
-                    gridLogic.gridCells[cellSet[x][y]].GetComponentInChildren<MeshRenderer>().material.color = Color.blue;
+                    gridLogic.gridCells[cellSet[x][y]].GetComponentInChildren<MeshRenderer>().material.color = highlightColor;
                 }
             }
 
             yield return StartCoroutine(unitBehaviour.TurnAction());
+
+            if (unitBehaviour.Stats.Health > 0f)
+            {   
+                turns.Add(turns[i]);
+            }
 
             for (int x = 0; x < cellSet.Count; x++)
             {
@@ -130,6 +137,8 @@ public class LevelController : MonoBehaviour
                 }
             }
         }
+
+        //Game over
     }
 
     private void OnSpawnCell(Cell cell, Vector2 position)

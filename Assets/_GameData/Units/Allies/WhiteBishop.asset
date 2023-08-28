@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c699c78abbb88a41991d64450196456, type: 3}
   m_Name: WhiteBishop
   m_EditorClassIdentifier: 
+  movementType: 0
   baseStats:
     health: 3
     damage: 1
-    speed: 4
+    speed: 2
   objectPrefab: {fileID: 5239201414176810281, guid: 935a3eb625675de479b7e76e45c90708,
     type: 3}

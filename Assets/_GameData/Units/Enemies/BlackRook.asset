@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c699c78abbb88a41991d64450196456, type: 3}
   m_Name: BlackRook
   m_EditorClassIdentifier: 
+  movementType: 2
   baseStats:
     health: 5
-    damage: 3
-    speed: 3
+    damage: 2
+    speed: 1
   objectPrefab: {fileID: 4395169060646792538, guid: f9097fb45c778ec4ca20931c615565ff,
     type: 3}

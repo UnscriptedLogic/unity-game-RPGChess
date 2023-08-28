@@ -617,6 +617,7 @@ MonoBehaviour:
     cellScale: 1
     anchor: {x: 0, y: 0}
   instantiateOffset: 0.075
+  highlightColor: {r: 0.21927047, g: 0.6132076, b: 0.17065683, a: 0.5019608}
 --- !u!4 &1851380783
 Transform:
   m_ObjectHideFlags: 0

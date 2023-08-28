@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe19e53e56ab5444c870772edf5a524f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPlayerControlled: 1
 --- !u!1001 &8741206561521351841
 PrefabInstance:
   m_ObjectHideFlags: 0
