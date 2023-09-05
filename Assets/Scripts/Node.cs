@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnscriptedLogic.Experimental.Generation;
 
 [RequireComponent(typeof(BoxCollider))]
 public class Node : MonoBehaviour
@@ -10,23 +11,20 @@ public class Node : MonoBehaviour
     
     private MeshRenderer meshRenderer;
     private Color originalColor;
+    private Cell cell;
 
-    public static EventHandler OnAnyNodeSelected;
+    public Cell Cell => cell;
+
+    public static event EventHandler OnAnyNodeSelected;
 
     private void Start()
     {
         meshRenderer = GetComponentInChildren<MeshRenderer>();
     }
 
-    private void OnMouseEnter()
+    public void Initialize(Cell cell)
     {
-        originalColor = meshRenderer.material.color;
-        meshRenderer.material.color = highlightColor;
-    }
-
-    private void OnMouseExit()
-    {
-        meshRenderer.material.color = originalColor;
+        this.cell = cell;
     }
 
     private void OnMouseDown()

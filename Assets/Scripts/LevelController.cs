@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,7 @@ public class LevelController : MonoBehaviour
     private GridLogic<GameObject> gridLogic;
 
     [Header("Entity Settings")]
+    [SerializeField] private LayerMask unitLayer;
     [SerializeField] private float instantiateOffset = 0.075f;
 
     private int waveIndex;
@@ -29,10 +31,18 @@ public class LevelController : MonoBehaviour
 
     [Header("Turn System Settings")]
     private List<Turn> turns;
+    private List<Turn> subTurns;
     [SerializeField] private Color highlightColor;
+    public static event EventHandler OnTurnEnded;
+
+    [Header("Healthbar Settings")]
+    [SerializeField] private UnitHPBarHandler hpBarHandler;
 
     private void Start()
     {
+        turns = new List<Turn>();
+        subTurns = new List<Turn>();
+
         //Grid Creation
         gridLogic = new GridLogic<GameObject>(settings);
         gridLogic.CreateGrid(OnSpawnCell);
@@ -54,10 +64,12 @@ public class LevelController : MonoBehaviour
         {
             for (int i = 0; i < teamData.Count; i++)
             {
-                GameObject unit = teamData[i].CreateUnit();
+                GameObject unit = teamData[i].CreateUnit(gridLogic.gridCells, ref turns, ref subTurns);
                 Cell cell = gridLogic.GetCellFromGrid((i * 3) + xOffset, yOffset);
                 unit.transform.position = gridLogic.gridCells[cell].transform.position + (Vector3.up * instantiateOffset);
                 unit.transform.forward = faceDir;
+
+                hpBarHandler.CreateHealthBar(unit.GetComponent<UnitBehaviour>());
 
                 UnitData unitData = new UnitData()
                 {
@@ -71,7 +83,8 @@ public class LevelController : MonoBehaviour
         }
 
         //Turn System
-        turns = new List<Turn>();
+        UnitBehaviour.OnAnyUnitDead += UnitBehaviour_OnUnitDead;
+
         for (int i = 0; i < playerTeam.Count; i++)
         {
             turns.Add(new Turn(
@@ -107,12 +120,58 @@ public class LevelController : MonoBehaviour
         StartCoroutine(GameTurns());
     }
 
-    private IEnumerator GameTurns()
+    private void UnitBehaviour_OnUnitDead(object sender, Cell cell)
     {
+        UnitBehaviour unitBehaviour = (UnitBehaviour)sender;
+        TryRemoveUnit(ref playerTeam, unitBehaviour);
+        TryRemoveUnit(ref enemyTeam, unitBehaviour);
+        TryRemoveUnit(ref allTeam, unitBehaviour);
+
         for (int i = 0; i < turns.Count; i++)
         {
-            UnitBehaviour unitBehaviour = turns[i].TurnObject.GetComponent<UnitBehaviour>();
-            List<List<Cell>> cellSet = unitBehaviour.GetPossibleMovementTiles(gridLogic.GetCellFromWorldPosition(new Vector2(unitBehaviour.transform.position.x, unitBehaviour.transform.position.z)), settings, gridLogic.gridCells);
+            if (turns[i].TurnObject == unitBehaviour.gameObject)
+            {
+                turns.RemoveAt(i);
+            }
+        }
+
+        void TryRemoveUnit(ref List<UnitData> team, UnitBehaviour unit)
+        {
+            for (int i = 0; i < team.Count; i++)
+            {
+                if (team[i].unit == unit)
+                {
+                    team.RemoveAt(i);
+                }
+            }
+        }
+    }
+
+    private IEnumerator GameTurns()
+    {
+        while (turns.Count > 0)
+        {
+            while (subTurns.Count > 0)
+            {
+                UnitBehaviour unit = subTurns[0].TurnObject.GetComponent<UnitBehaviour>();
+                yield return StartCoroutine(unit.TriggerSubTurn());
+
+                subTurns.RemoveAt(0);
+            }
+
+            yield return new WaitForSeconds(0.5f);
+
+            UnitBehaviour unitBehaviour = turns[0].TurnObject.GetComponent<UnitBehaviour>();
+
+            UnitBehaviour.GetPossibleMovementTileParams movementSettings = new UnitBehaviour.GetPossibleMovementTileParams()
+            {
+                currentPosition = gridLogic.GetCellFromWorldPosition(new Vector2(unitBehaviour.transform.position.x, unitBehaviour.transform.position.z)),
+                settings = settings, 
+                gridCells = gridLogic.gridCells, 
+                unitLayer = unitLayer
+            };
+
+            List<List<Cell>> cellSet = unitBehaviour.GetPossibleMovementTiles(movementSettings, out List<List<Cell>> modifiedCells);
 
             for (int x = 0; x < cellSet.Count; x++)
             {
@@ -122,12 +181,16 @@ public class LevelController : MonoBehaviour
                 }
             }
 
+            yield return null;
+
             yield return StartCoroutine(unitBehaviour.TurnAction());
 
             if (unitBehaviour.Stats.Health > 0f)
-            {   
-                turns.Add(turns[i]);
+            {
+                turns.Add(new Turn(turns[0]));
             }
+
+            turns.RemoveAt(0);
 
             for (int x = 0; x < cellSet.Count; x++)
             {
@@ -136,6 +199,10 @@ public class LevelController : MonoBehaviour
                     gridLogic.gridCells[cellSet[x][y]].GetComponentInChildren<MeshRenderer>().material.color = Color.grey;
                 }
             }
+
+            yield return new WaitForSeconds(0.5f);
+
+            OnTurnEnded?.Invoke(this, EventArgs.Empty);
         }
 
         //Game over
@@ -144,6 +211,7 @@ public class LevelController : MonoBehaviour
     private void OnSpawnCell(Cell cell, Vector2 position)
     {
         GameObject node = Instantiate(nodePrefab, transform);
+        node.GetComponent<Node>().Initialize(cell);
         node.transform.position = new Vector3(position.x, transform.position.y, position.y);
         gridLogic.gridCells.Add(cell, node);
     }

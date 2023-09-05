@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnscriptedLogic;
+using UnscriptedLogic.Experimental.Generation;
 
 [CreateAssetMenu(fileName = "New Unit", menuName = "ScriptableObjects/Create New Unit")]
 public class Unit : ScriptableObject
@@ -93,10 +95,10 @@ public class Unit : ScriptableObject
     public GameObject ObjectPrefab => objectPrefab;
     public MovementType UnitMovementType => movementType;
 
-    public GameObject CreateUnit()
+    public GameObject CreateUnit(Dictionary<Cell, GameObject> gridCells, ref List<Turn> turns, ref List<Turn> subTurns)
     {
         GameObject unitObject = Instantiate(objectPrefab);
-        unitObject.GetComponent<UnitBehaviour>().Initialize(this, baseStats);
+        unitObject.GetComponent<UnitBehaviour>().Initialize(this, baseStats, gridCells, ref turns, ref subTurns);
         return unitObject;
     }
 }

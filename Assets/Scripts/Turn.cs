@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+[System.Serializable]
 public class Turn
 {
     private int actionValue;
@@ -12,5 +13,11 @@ public class Turn
     {
         this.actionValue = actionValue;
         this.turnObject = turnObject;
+    }
+
+    public Turn(Turn turn)
+    {
+        this.actionValue = turn.actionValue;
+        this.turnObject = turn.turnObject;
     }
 }
