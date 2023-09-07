@@ -7,7 +7,7 @@ public class KnightUnit : UnitBehaviour
 {
     public override List<List<Cell>> GetPossibleMovementTiles(GetPossibleMovementTileParams movementParams, out List<List<Cell>> modifiedSet)
     {
-        movementSet = UnitMovement.GetKnightMovementTiles(movementParams.currentPosition, movementParams.settings, movementParams.gridCells);
+        movementSet = UnitMovement.GetKnightMovementTiles(movementParams.currentPosition, movementParams.settings, gridCells);
 
         for (int i = 0; i < movementSet.Count; i++)
         {
@@ -15,7 +15,7 @@ public class KnightUnit : UnitBehaviour
             {
                 Vector3 position = new Vector3(movementSet[i][j].WorldCoords.x, 0f, movementSet[i][j].WorldCoords.y);
 
-                Collider[] colliders = Physics.OverlapSphere(position, 0.5f, movementParams.unitLayer);
+                Collider[] colliders = Physics.OverlapSphere(position, 0.5f, unitLayer);
                 for (int k = 0; k < colliders.Length; k++)
                 {
                     UnitBehaviour unitBehaviour = colliders[k].GetComponent<UnitBehaviour>();

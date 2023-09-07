@@ -2,11 +2,89 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnscriptedLogic;
 using UnscriptedLogic.Experimental.Generation;
+
+public class TurnList<T> : IList<T> where T : Turn
+{
+    public List<T> turns = new List<T>();
+
+    public T this[int index] { get => turns[index]; set => turns[index] = value; }
+    public int Count => turns.Count;
+    public bool IsReadOnly => false;
+
+    public event Action<T> OnCreated;
+    public event Action<T> OnInserted;
+    public event Action<T> OnRemoved;
+
+    public void Add(T item)
+    {
+        turns.Add(item);
+        OnCreated?.Invoke(item);
+    }
+
+    public void Insert(int index, T item)
+    {
+        turns.Insert(index, item);
+        OnInserted?.Invoke(item);
+    }
+
+    public bool Remove(T item)
+    {
+        bool value = turns.Remove(item);
+
+        if (value)
+        {
+            OnRemoved?.Invoke(item);
+        }
+
+        return value;
+    }
+
+    public void RemoveAt(int index)
+    {
+        T turnToRemove = turns[index];
+        turns.RemoveAt(index);
+        OnRemoved?.Invoke(turnToRemove);
+    }
+
+    public void Clear() => turns.Clear();
+    public bool Contains(T item) => turns.Contains(item);
+    public void CopyTo(T[] array, int arrayIndex) => turns.CopyTo(array, arrayIndex);
+    public IEnumerator<T> GetEnumerator() => turns.GetEnumerator();
+    public int IndexOf(T item) => turns.IndexOf(item);
+    IEnumerator IEnumerable.GetEnumerator() => turns.GetEnumerator();
+
+    public void SortDescending()
+    {
+        turns.Sort((turnA, turnB) =>
+        {
+            if (turnA.ActionValue < turnB.ActionValue)
+            {
+                return 1;
+            }
+            else if (turnA.ActionValue > turnB.ActionValue)
+            {
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
+        });
+    }
+}
 
 public class LevelController : MonoBehaviour
 {
+    public static LevelController instance { get; private set; }
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
+    public event EventHandler OnLevelInitialized;
+
     [Header("Grid Settings")]
     [SerializeField] private GameObject nodePrefab;
     [SerializeField] private GridSettings settings;
@@ -30,9 +108,15 @@ public class LevelController : MonoBehaviour
     }
 
     [Header("Turn System Settings")]
-    private List<Turn> turns;
-    private List<Turn> subTurns;
+    private int currentTurn;
+    private TurnList<Turn> turns;
+    private TurnList<Turn> subTurns;
     [SerializeField] private Color highlightColor;
+
+    public TurnList<Turn> Turns => turns;
+    public TurnList<Turn> SubTurns => subTurns;
+    public int CurrentTurn => currentTurn;
+
     public static event EventHandler OnTurnEnded;
 
     [Header("Healthbar Settings")]
@@ -40,8 +124,8 @@ public class LevelController : MonoBehaviour
 
     private void Start()
     {
-        turns = new List<Turn>();
-        subTurns = new List<Turn>();
+        turns = new TurnList<Turn>();
+        subTurns = new TurnList<Turn>();
 
         //Grid Creation
         gridLogic = new GridLogic<GameObject>(settings);
@@ -64,7 +148,7 @@ public class LevelController : MonoBehaviour
         {
             for (int i = 0; i < teamData.Count; i++)
             {
-                GameObject unit = teamData[i].CreateUnit(gridLogic.gridCells, ref turns, ref subTurns);
+                GameObject unit = teamData[i].CreateUnit(ref turns, ref subTurns, ref gridLogic.gridCells);
                 Cell cell = gridLogic.GetCellFromGrid((i * 3) + xOffset, yOffset);
                 unit.transform.position = gridLogic.gridCells[cell].transform.position + (Vector3.up * instantiateOffset);
                 unit.transform.forward = faceDir;
@@ -87,37 +171,29 @@ public class LevelController : MonoBehaviour
 
         for (int i = 0; i < playerTeam.Count; i++)
         {
-            turns.Add(new Turn(
+            Turn turn = new Turn(
                     actionValue: playerTeam[i].unit.Stats.Speed,
                     turnObject: playerTeam[i].unit.gameObject
-                ));
+                );
+
+            turns.Add(turn);
         }
 
         for (int i = 0; i < enemyTeam.Count; i++)
         {
-            turns.Add(new Turn(
+            Turn turn = new Turn(
                     actionValue: enemyTeam[i].unit.Stats.Speed,
                     turnObject: enemyTeam[i].unit.gameObject
-                ));
+                );
+
+            turns.Add(turn);
         }
 
-        turns.Sort((turnA, turnB) =>
-        {
-            if (turnA.ActionValue < turnB.ActionValue)
-            {
-                return 1;
-            }
-            else if (turnA.ActionValue > turnB.ActionValue)
-            {
-                return -1;
-            } 
-            else
-            {
-                return 0;
-            }
-        });
+        turns.SortDescending();
 
         StartCoroutine(GameTurns());
+
+        OnLevelInitialized?.Invoke(this, EventArgs.Empty);
     }
 
     private void UnitBehaviour_OnUnitDead(object sender, Cell cell)
@@ -167,8 +243,6 @@ public class LevelController : MonoBehaviour
             {
                 currentPosition = gridLogic.GetCellFromWorldPosition(new Vector2(unitBehaviour.transform.position.x, unitBehaviour.transform.position.z)),
                 settings = settings, 
-                gridCells = gridLogic.gridCells, 
-                unitLayer = unitLayer
             };
 
             List<List<Cell>> cellSet = unitBehaviour.GetPossibleMovementTiles(movementSettings, out List<List<Cell>> modifiedCells);

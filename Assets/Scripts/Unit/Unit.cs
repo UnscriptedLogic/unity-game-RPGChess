@@ -95,10 +95,11 @@ public class Unit : ScriptableObject
     public GameObject ObjectPrefab => objectPrefab;
     public MovementType UnitMovementType => movementType;
 
-    public GameObject CreateUnit(Dictionary<Cell, GameObject> gridCells, ref List<Turn> turns, ref List<Turn> subTurns)
+    public GameObject CreateUnit(ref TurnList<Turn> turns, ref TurnList<Turn> subTurns, ref Dictionary<Cell, GameObject> gridCells)
     {
         GameObject unitObject = Instantiate(objectPrefab);
-        unitObject.GetComponent<UnitBehaviour>().Initialize(this, baseStats, gridCells, ref turns, ref subTurns);
+        unitObject.GetComponent<UnitBehaviour>().Initialize(this, baseStats, ref turns, ref subTurns, ref gridCells);
+        unitObject.name = unitObject.name.Replace("(Clone)", "");
         return unitObject;
     }
 }

@@ -18,8 +18,6 @@ public class UnitBehaviour : MonoBehaviour
     {
         public Cell currentPosition;
         public GridSettings settings;
-        public Dictionary<Cell, GameObject> gridCells;
-        public LayerMask unitLayer;
     }
 
     [SerializeField] protected bool isPlayerControlled;
@@ -30,10 +28,11 @@ public class UnitBehaviour : MonoBehaviour
     protected bool isUnitsTurn;
     protected Unit unitData;
     protected List<List<Cell>> movementSet;
-    protected Dictionary<Cell, GameObject> gridCell;
 
-    protected List<Turn> turns;
-    protected List<Turn> subTurns;
+    protected Dictionary<Cell, GameObject> gridCells;
+
+    protected TurnList<Turn> turns;
+    protected TurnList<Turn> subTurns;
 
     protected UnitBehaviour targettedUnit;
     protected Cell targettedCell;
@@ -48,14 +47,14 @@ public class UnitBehaviour : MonoBehaviour
     public static event EventHandler<Cell> OnAnyUnitDead;
 
     public Unit.Stats Stats => stats;
-    public Cell CurrentCell => gridCell.GetCellFromWorldPosition(new Vector2(transform.position.x, transform.position.z));
+    public Cell CurrentCell => gridCells.GetCellFromWorldPosition(new Vector2(transform.position.x, transform.position.z));
 
-    public void Initialize(Unit unitData, Unit.Stats baseStats, Dictionary<Cell, GameObject> gridCell, ref List<Turn> turns, ref List<Turn> subTurns)
+    public void Initialize(Unit unitData, Unit.Stats baseStats, ref TurnList<Turn> turns, ref TurnList<Turn> subTurns, ref Dictionary<Cell, GameObject> gridCells)
     {
         this.unitData = unitData;
         stats = new Unit.Stats(baseStats);
 
-        this.gridCell = gridCell;
+        this.gridCells = gridCells;
 
         this.turns = turns;
         this.subTurns = subTurns;
