@@ -15,7 +15,13 @@ public class TurnUI : MonoBehaviour
     public Transform Anchor => anchor;
 
     public void SetIcon(Sprite icon) => iconImg.sprite = icon;
-    public void SetActionValue(int value) => actionValueTMP.text = value.ToString();
+    
+    public void SetActionValue(int value)
+    {
+        if (actionValueTMP == null) return;
+        actionValueTMP.text = value.ToString();
+    }
+
     public void SetTurnName(string name) => turnNameTMP.text = name;
     
     public void SetAnchor(Transform anchor)

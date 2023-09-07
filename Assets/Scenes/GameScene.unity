@@ -159,8 +159,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 96.99994, y: -322}
-  m_SizeDelta: {x: 194, y: 644}
+  m_AnchoredPosition: {x: 88.753, y: -421.4}
+  m_SizeDelta: {x: 177.5, y: 644}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &330585543
 GameObject:
@@ -345,18 +345,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 338213875}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 10
-    m_Right: 10
-    m_Top: 10
-    m_Bottom: 10
-  m_ChildAlignment: 1
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 3
   m_Spacing: 10
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 0
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
@@ -515,8 +515,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 97.001, y: 261.13388}
-  m_SizeDelta: {x: 627.15, y: 121.732}
+  m_AnchoredPosition: {x: 89.4, y: 334.91}
+  m_SizeDelta: {x: 619.85, y: 86.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &832575517
 GameObject:
@@ -703,13 +703,14 @@ RectTransform:
   m_Children:
   - {fileID: 269317808}
   - {fileID: 656801782}
+  - {fileID: 2465581416382247406}
   m_Father: {fileID: 1680682137}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 425.57526, y: -344.8861}
-  m_SizeDelta: {x: 821.148, y: 643.772}
+  m_AnchoredPosition: {x: 425.57526, y: -401.184}
+  m_SizeDelta: {x: 821.148, y: 756.367}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1216558386
 MonoBehaviour:
@@ -723,12 +724,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79295adeb45ec6743802d05349a72eb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  emptyTurnAnchorPrefab: {fileID: 6285661254189943482, guid: 54776f0d4a364864c8ff718e8e7bc8a3,
-    type: 3}
+  currentTurnAnchor: {fileID: 2465581416382247406}
   turnUIPrefab: {fileID: 180242685032810504, guid: 0c7bebcf9dc959549a41067e782d0354,
+    type: 3}
+  emptyTurnAnchorPrefab: {fileID: 6285661254189943482, guid: 54776f0d4a364864c8ff718e8e7bc8a3,
     type: 3}
   turnUIParent: {fileID: 1308395086}
   turnObjectParent: {fileID: 1059627206}
+  subTurnUIPrefab: {fileID: 900694497436066696, guid: e516e69eb7e9d2f4d81de5b126d94344,
+    type: 3}
+  emptySubTurnAnchorPrefab: {fileID: 6330448223981258563, guid: 11ddf1d3e0b379a4b8d3cd30a393a8ab,
+    type: 3}
+  subTurnUIParent: {fileID: 338213876}
+  subTurnObjectParent: {fileID: 900175869}
 --- !u!1 &1308395085
 GameObject:
   m_ObjectHideFlags: 0
@@ -1175,3 +1183,39 @@ MonoBehaviour:
   healthbarPrefab: {fileID: 673487453297427906, guid: e7252138048f6d7498d08570f29da1d8,
     type: 3}
   offsetPosition: {x: 0, y: 1.3, z: 0}
+--- !u!224 &2465581416382247406
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5914517596827443827}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1216558385}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 88.752, y: -43.362}
+  m_SizeDelta: {x: 177.504, y: 86.724}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &5914517596827443827
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2465581416382247406}
+  m_Layer: 5
+  m_Name: SpotLightAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1

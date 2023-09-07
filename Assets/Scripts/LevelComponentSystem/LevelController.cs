@@ -108,16 +108,20 @@ public class LevelController : MonoBehaviour
     }
 
     [Header("Turn System Settings")]
-    private int currentTurn;
+    private Turn currentTurn;
     private TurnList<Turn> turns;
     private TurnList<Turn> subTurns;
     [SerializeField] private Color highlightColor;
 
     public TurnList<Turn> Turns => turns;
     public TurnList<Turn> SubTurns => subTurns;
-    public int CurrentTurn => currentTurn;
+    public Turn CurrentTurn => currentTurn;
 
-    public static event EventHandler OnTurnEnded;
+    public static event EventHandler<Turn> OnTurnBegan;
+    public static event EventHandler<Turn> OnTurnEnded;
+
+    public static event EventHandler<Turn> OnSubTurnBegan;
+    public static event EventHandler<Turn> OnSubTurnEnded;
 
     [Header("Healthbar Settings")]
     [SerializeField] private UnitHPBarHandler hpBarHandler;
@@ -230,8 +234,15 @@ public class LevelController : MonoBehaviour
             while (subTurns.Count > 0)
             {
                 UnitBehaviour unit = subTurns[0].TurnObject.GetComponent<UnitBehaviour>();
+
+                OnSubTurnBegan?.Invoke(this, subTurns[0]);
+
+                currentTurn = subTurns[0];
                 yield return StartCoroutine(unit.TriggerSubTurn());
 
+                yield return new WaitForSeconds(1f);
+
+                OnSubTurnEnded?.Invoke(this, subTurns[0]);
                 subTurns.RemoveAt(0);
             }
 
@@ -255,16 +266,15 @@ public class LevelController : MonoBehaviour
                 }
             }
 
-            yield return null;
+            OnTurnBegan?.Invoke(this, turns[0]);
 
+            currentTurn = turns[0];
             yield return StartCoroutine(unitBehaviour.TurnAction());
 
             if (unitBehaviour.Stats.Health > 0f)
             {
                 turns.Add(new Turn(turns[0]));
             }
-
-            turns.RemoveAt(0);
 
             for (int x = 0; x < cellSet.Count; x++)
             {
@@ -276,7 +286,9 @@ public class LevelController : MonoBehaviour
 
             yield return new WaitForSeconds(0.5f);
 
-            OnTurnEnded?.Invoke(this, EventArgs.Empty);
+            OnTurnEnded?.Invoke(this, turns[0]);
+
+            turns.RemoveAt(0);
         }
 
         //Game over
