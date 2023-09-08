@@ -2,6 +2,8 @@ using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnscriptedLogic;
@@ -31,6 +33,7 @@ public class UnitBehaviour : MonoBehaviour
     protected bool isUnitsTurn;
     protected Unit unitData;
     protected List<List<Cell>> movementSet;
+    protected bool canMove;
 
     protected Dictionary<Cell, GameObject> gridCells;
 
@@ -71,6 +74,22 @@ public class UnitBehaviour : MonoBehaviour
 
         unitLayer = levelController.UnitLayer;
         highlightColor = levelController.HighLightColor;
+
+        LevelController.OnTurnBegan += LevelController_OnTurnBegan;
+    }
+
+    private void OnDestroy()
+    {
+        stats.HealthHandler.OnEmpty -= HealthHandler_OnEmpty;
+        LevelController.OnTurnBegan -= LevelController_OnTurnBegan;
+    }
+
+    private void LevelController_OnTurnBegan(object sender, Turn turn)
+    {
+        if (turn.TurnObject == gameObject)
+        {
+            canMove = true;
+        }
     }
 
     private void HealthHandler_OnEmpty(object sender, EventArgs e)
@@ -111,13 +130,34 @@ public class UnitBehaviour : MonoBehaviour
 
         cellSet = GetPossibleMovementTiles(movementSettings, out List<List<Cell>> modifiedCells);
 
-        for (int x = 0; x < cellSet.Count; x++)
+        if (!canMove)
         {
-            for (int y = 0; y < cellSet[x].Count; y++)
+            for (int x = cellSet.Count - 1; x >= 0; x--)
             {
-                gridCells[cellSet[x][y]].GetComponentInChildren<MeshRenderer>().material.color = highlightColor;
-            }
+                for (int y = cellSet[x].Count - 1; y >= 0; y--)
+                {
+                    Cell cell = cellSet[x][y];
+                    Collider[] colliders = Physics.OverlapSphere(new Vector3(cell.WorldCoords.x, 0f, cell.WorldCoords.y), 0.75f, unitLayer);
+
+                    if (colliders.Length == 0)
+                    {
+                        cellSet[x].Remove(cell);
+                    }
+                }
+
+                if (cellSet[x].Count == 0)
+                {
+                    cellSet.Remove(cellSet[x]);
+                }
+            } 
         }
+
+        if (cellSet.Count == 0)
+        {
+            EndTurn();
+        }
+
+        PaintValidMovementNodes();
 
         if (!isPlayerControlled)
         {
@@ -172,6 +212,11 @@ public class UnitBehaviour : MonoBehaviour
         }
         else
         {
+            canMove = false;
+
+            subTurns.Add(new Turn(0, gameObject));
+            TriggerSubTurn = TurnAction;
+
             MoveToCell(cell, () =>
             {
                 inputGiven = true;
@@ -240,4 +285,18 @@ public class UnitBehaviour : MonoBehaviour
             }
         }
     }
+
+
+    private void PaintValidMovementNodes()
+    {
+        for (int x = 0; x < cellSet.Count; x++)
+        {
+            for (int y = 0; y < cellSet[x].Count; y++)
+            {
+                gridCells[cellSet[x][y]].GetComponentInChildren<MeshRenderer>().material.color = highlightColor;
+            }
+        }
+    }
+
+    protected void EndTurn() => inputGiven = true;
 }

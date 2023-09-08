@@ -247,7 +247,7 @@ public class LevelController : MonoBehaviour
                 currentTurn = subTurns[0];
                 yield return StartCoroutine(unit.TriggerSubTurn());
 
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(0.5f);
 
                 OnSubTurnEnded?.Invoke(this, subTurns[0]);
                 subTurns.RemoveAt(0);
