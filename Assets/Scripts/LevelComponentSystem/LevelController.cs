@@ -91,6 +91,8 @@ public class LevelController : MonoBehaviour
 
     private GridLogic<GameObject> gridLogic;
 
+    public GridSettings GridSettings => settings;
+
     [Header("Entity Settings")]
     [SerializeField] private LayerMask unitLayer;
     [SerializeField] private float instantiateOffset = 0.075f;
@@ -107,15 +109,20 @@ public class LevelController : MonoBehaviour
         public UnitBehaviour unit;
     }
 
+    public LayerMask UnitLayer => unitLayer;
+
     [Header("Turn System Settings")]
     private Turn currentTurn;
     private TurnList<Turn> turns;
     private TurnList<Turn> subTurns;
+
     [SerializeField] private Color highlightColor;
 
     public TurnList<Turn> Turns => turns;
     public TurnList<Turn> SubTurns => subTurns;
     public Turn CurrentTurn => currentTurn;
+
+    public Color HighLightColor => highlightColor;
 
     public static event EventHandler<Turn> OnTurnBegan;
     public static event EventHandler<Turn> OnTurnEnded;
@@ -250,22 +257,6 @@ public class LevelController : MonoBehaviour
 
             UnitBehaviour unitBehaviour = turns[0].TurnObject.GetComponent<UnitBehaviour>();
 
-            UnitBehaviour.GetPossibleMovementTileParams movementSettings = new UnitBehaviour.GetPossibleMovementTileParams()
-            {
-                currentPosition = gridLogic.GetCellFromWorldPosition(new Vector2(unitBehaviour.transform.position.x, unitBehaviour.transform.position.z)),
-                settings = settings, 
-            };
-
-            List<List<Cell>> cellSet = unitBehaviour.GetPossibleMovementTiles(movementSettings, out List<List<Cell>> modifiedCells);
-
-            for (int x = 0; x < cellSet.Count; x++)
-            {
-                for (int y = 0; y < cellSet[x].Count; y++)
-                {
-                    gridLogic.gridCells[cellSet[x][y]].GetComponentInChildren<MeshRenderer>().material.color = highlightColor;
-                }
-            }
-
             OnTurnBegan?.Invoke(this, turns[0]);
 
             currentTurn = turns[0];
@@ -274,14 +265,6 @@ public class LevelController : MonoBehaviour
             if (unitBehaviour.Stats.Health > 0f)
             {
                 turns.Add(new Turn(turns[0]));
-            }
-
-            for (int x = 0; x < cellSet.Count; x++)
-            {
-                for (int y = 0; y < cellSet[x].Count; y++)
-                {
-                    gridLogic.gridCells[cellSet[x][y]].GetComponentInChildren<MeshRenderer>().material.color = Color.grey;
-                }
             }
 
             yield return new WaitForSeconds(0.5f);

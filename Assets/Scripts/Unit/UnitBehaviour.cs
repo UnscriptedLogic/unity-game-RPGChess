@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnscriptedLogic;
 using UnscriptedLogic.Experimental.Generation;
 
@@ -23,6 +24,8 @@ public class UnitBehaviour : MonoBehaviour
     [SerializeField] protected bool isPlayerControlled;
     public int teamIndex;
 
+    protected LevelController levelController;
+
     protected Unit.Stats stats;
     protected bool inputGiven;
     protected bool isUnitsTurn;
@@ -37,7 +40,10 @@ public class UnitBehaviour : MonoBehaviour
     protected UnitBehaviour targettedUnit;
     protected Cell targettedCell;
 
-    [SerializeField] protected LayerMask unitLayer;
+    protected List<List<Cell>> cellSet;
+
+    protected LayerMask unitLayer;
+    protected Color highlightColor;
 
     public delegate IEnumerator TriggerSubTurnDelegate();
     public TriggerSubTurnDelegate TriggerSubTurn;
@@ -51,6 +57,8 @@ public class UnitBehaviour : MonoBehaviour
 
     public void Initialize(Unit unitData, Unit.Stats baseStats, ref TurnList<Turn> turns, ref TurnList<Turn> subTurns, ref Dictionary<Cell, GameObject> gridCells)
     {
+        levelController = LevelController.instance;
+
         this.unitData = unitData;
         stats = new Unit.Stats(baseStats);
 
@@ -60,6 +68,9 @@ public class UnitBehaviour : MonoBehaviour
         this.subTurns = subTurns;
 
         stats.HealthHandler.OnEmpty += HealthHandler_OnEmpty;
+
+        unitLayer = levelController.UnitLayer;
+        highlightColor = levelController.HighLightColor;
     }
 
     private void HealthHandler_OnEmpty(object sender, EventArgs e)
@@ -91,6 +102,22 @@ public class UnitBehaviour : MonoBehaviour
     protected virtual void OnTurnBegin()
     {
         isUnitsTurn = true;
+
+        GetPossibleMovementTileParams movementSettings = new GetPossibleMovementTileParams()
+        {
+            currentPosition = gridCells.GetCellFromWorldPosition(new Vector2(transform.position.x, transform.position.z)),
+            settings = LevelController.instance.GridSettings
+        };
+
+        cellSet = GetPossibleMovementTiles(movementSettings, out List<List<Cell>> modifiedCells);
+
+        for (int x = 0; x < cellSet.Count; x++)
+        {
+            for (int y = 0; y < cellSet[x].Count; y++)
+            {
+                gridCells[cellSet[x][y]].GetComponentInChildren<MeshRenderer>().material.color = highlightColor;
+            }
+        }
 
         if (!isPlayerControlled)
         {
@@ -203,6 +230,14 @@ public class UnitBehaviour : MonoBehaviour
         if (teamIndex == 0)
         {
             Node.OnAnyNodeSelected -= Node_OnAnyNodeSelected;
+        }
+
+        for (int x = 0; x < cellSet.Count; x++)
+        {
+            for (int y = 0; y < cellSet[x].Count; y++)
+            {
+                gridCells[cellSet[x][y]].GetComponentInChildren<MeshRenderer>().material.color = Color.grey;
+            }
         }
     }
 }
