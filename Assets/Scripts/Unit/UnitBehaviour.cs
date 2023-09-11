@@ -15,6 +15,12 @@ public class UnitDealtDamageArgs : EventArgs
     public int damage;
 }
 
+public class UnitRecievedDamageArgs : EventArgs
+{
+    public UnitBehaviour dealer;
+    public int damage;
+}
+
 public class UnitBehaviour : MonoBehaviour
 {
     public class GetPossibleMovementTileParams
@@ -53,6 +59,7 @@ public class UnitBehaviour : MonoBehaviour
 
     public static event EventHandler OnAnyUnitHPZero;
     public static event EventHandler<UnitDealtDamageArgs> OnAnyUnitDealtDamage;
+    public static event EventHandler<UnitRecievedDamageArgs> OnAnyUnitRecievedDamage;
     public static event EventHandler<Cell> OnAnyUnitDead;
 
     public Unit.Stats Stats => stats;
@@ -155,6 +162,7 @@ public class UnitBehaviour : MonoBehaviour
         if (cellSet.Count == 0)
         {
             EndTurn();
+            return;
         }
 
         PaintValidMovementNodes();
@@ -166,7 +174,7 @@ public class UnitBehaviour : MonoBehaviour
             int counter = 10;
             while (direction.Count <= 0 || counter > 0)
             {
-                direction = movementSet.GetRandomElement();
+                direction = cellSet.GetRandomElement();
                 counter--;
             }
 
@@ -182,6 +190,11 @@ public class UnitBehaviour : MonoBehaviour
 
     protected void InteractWithCell(Cell cell)
     {
+        if (teamIndex == 0)
+        {
+            Node.OnAnyNodeSelected -= Node_OnAnyNodeSelected;
+        }
+
         Collider[] colliders = Physics.OverlapSphere(new Vector3(cell.WorldCoords.x, 0f, cell.WorldCoords.y), 0.75f, unitLayer);
         if (colliders.Length > 0)
         {
@@ -190,7 +203,7 @@ public class UnitBehaviour : MonoBehaviour
                 UnitBehaviour unitBehaviour = colliders[i].GetComponent<UnitBehaviour>();
                 if (unitBehaviour != null)
                 {
-                    unitBehaviour.stats.HealthHandler.Modify(ModifyType.Subtract, stats.Damage);
+                    unitBehaviour.DamageUnit(this, stats.Damage);
                     targettedUnit = unitBehaviour;
                     targettedCell = cell;
                     if (unitBehaviour.stats.Health <= 0f)
@@ -199,13 +212,13 @@ public class UnitBehaviour : MonoBehaviour
                         subTurns.Add(new Turn(0, gameObject));
                     }
 
-                    OnAnyUnitDealtDamage?.Invoke(this, new UnitDealtDamageArgs()
-                    {
-                        reciever = unitBehaviour,
-                        damage = stats.Damage
-                    });
+                    //OnAnyUnitDealtDamage?.Invoke(this, new UnitDealtDamageArgs()
+                    //{
+                    //    reciever = unitBehaviour,
+                    //    damage = stats.Damage
+                    //});
 
-                    inputGiven = true;
+                    EndTurn();
                     break;
                 }
             }
@@ -219,9 +232,19 @@ public class UnitBehaviour : MonoBehaviour
 
             MoveToCell(cell, () =>
             {
-                inputGiven = true;
+                EndTurn();
             });
         }
+    }
+
+    public void DamageUnit(UnitBehaviour inflictor, int amount)
+    {
+        stats.HealthHandler.Modify(ModifyType.Subtract, amount);
+        OnAnyUnitRecievedDamage(this, new UnitRecievedDamageArgs()
+        {
+            dealer = inflictor,
+            damage = amount
+        });
     }
 
     protected void MoveToCell(Cell cell, Action OnComplete)
@@ -272,10 +295,7 @@ public class UnitBehaviour : MonoBehaviour
     {
         isUnitsTurn = false;
 
-        if (teamIndex == 0)
-        {
-            Node.OnAnyNodeSelected -= Node_OnAnyNodeSelected;
-        }
+
 
         for (int x = 0; x < cellSet.Count; x++)
         {
@@ -298,5 +318,8 @@ public class UnitBehaviour : MonoBehaviour
         }
     }
 
-    protected void EndTurn() => inputGiven = true;
+    protected void EndTurn()
+    {
+        inputGiven = true;
+    }
 }

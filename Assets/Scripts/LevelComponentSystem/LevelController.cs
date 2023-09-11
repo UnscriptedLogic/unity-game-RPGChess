@@ -78,6 +78,8 @@ public class LevelController : MonoBehaviour
 {
     public static LevelController instance { get; private set; }
 
+    private Coroutine gameTurnRoutine;
+
     private void Awake()
     {
         instance = this;
@@ -157,10 +159,14 @@ public class LevelController : MonoBehaviour
 
         void CreateTeam(List<Unit> teamData, int yOffset, int xOffset, ref List<UnitData> team, Vector3 faceDir)
         {
+            int unitOffset = Mathf.RoundToInt(GridSettings.Size.x / teamData.Count);
+
             for (int i = 0; i < teamData.Count; i++)
             {
+                if (teamData[i] == null) continue;
+
                 GameObject unit = teamData[i].CreateUnit(ref turns, ref subTurns, ref gridLogic.gridCells);
-                Cell cell = gridLogic.GetCellFromGrid((i * 3) + xOffset, yOffset);
+                Cell cell = gridLogic.GetCellFromGrid(i, yOffset);
                 unit.transform.position = gridLogic.gridCells[cell].transform.position + (Vector3.up * instantiateOffset);
                 unit.transform.forward = faceDir;
 
@@ -202,9 +208,26 @@ public class LevelController : MonoBehaviour
 
         turns.SortDescending();
 
-        StartCoroutine(GameTurns());
+        gameTurnRoutine = StartCoroutine(GameTurns());
+
+        OnTurnEnded += CheckForWinCondition;
+        OnSubTurnEnded += CheckForWinCondition;
 
         OnLevelInitialized?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void CheckForWinCondition(object sender, Turn e)
+    {
+        if (playerTeam.Count == 0)
+        {
+            Debug.Log("Enemy Team Won!");
+            StopCoroutine(gameTurnRoutine);
+        }
+        else if (enemyTeam.Count == 0)
+        {
+            Debug.Log("Player Team Won!");
+            StopCoroutine(gameTurnRoutine);
+        }
     }
 
     private void UnitBehaviour_OnUnitDead(object sender, Cell cell)
@@ -247,13 +270,13 @@ public class LevelController : MonoBehaviour
                 currentTurn = subTurns[0];
                 yield return StartCoroutine(unit.TriggerSubTurn());
 
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(0.25f);
 
                 OnSubTurnEnded?.Invoke(this, subTurns[0]);
                 subTurns.RemoveAt(0);
             }
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.25f);
 
             UnitBehaviour unitBehaviour = turns[0].TurnObject.GetComponent<UnitBehaviour>();
 
@@ -267,7 +290,7 @@ public class LevelController : MonoBehaviour
                 turns.Add(new Turn(turns[0]));
             }
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.25f);
 
             OnTurnEnded?.Invoke(this, turns[0]);
 
