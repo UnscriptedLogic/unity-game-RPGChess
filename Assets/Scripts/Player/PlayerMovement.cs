@@ -10,9 +10,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform cameraTransform;
 
     private float turnSmoothVel;
+    private bool canMove;
 
     private void Update()
     {
+        if (!canMove) return;
+
         float x = Input.GetAxisRaw("Horizontal");
         float y = Input.GetAxisRaw("Vertical");
         Vector3 dir = new Vector3(x, 0f, y).normalized;
@@ -27,4 +30,6 @@ public class PlayerMovement : MonoBehaviour
             controller.Move(movementDir * movementSpeed * Time.deltaTime);
         }
     }
+
+    public void SetCanMove(bool value) => canMove = value;
 }
