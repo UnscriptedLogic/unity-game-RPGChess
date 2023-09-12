@@ -58,7 +58,6 @@ public class UnitBehaviour : MonoBehaviour
     public TriggerSubTurnDelegate TriggerSubTurn;
 
     public static event EventHandler OnAnyUnitHPZero;
-    public static event EventHandler<UnitDealtDamageArgs> OnAnyUnitDealtDamage;
     public static event EventHandler<UnitRecievedDamageArgs> OnAnyUnitRecievedDamage;
     public static event EventHandler<Cell> OnAnyUnitDead;
 
@@ -211,12 +210,6 @@ public class UnitBehaviour : MonoBehaviour
                         TriggerSubTurn = KilledAUnit;
                         subTurns.Add(new Turn(0, gameObject));
                     }
-
-                    //OnAnyUnitDealtDamage?.Invoke(this, new UnitDealtDamageArgs()
-                    //{
-                    //    reciever = unitBehaviour,
-                    //    damage = stats.Damage
-                    //});
 
                     EndTurn();
                     break;
