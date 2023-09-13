@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0f3787f60d9c1f45915c22ae01c8fb8, type: 3}
+  m_Name: Desolate Piercer
+  m_EditorClassIdentifier: 
+  statsModifier:
+    health: 0
+    damage: 4
+    speed: 0
+  icon: {fileID: 0}
+  description: 'An item that increases the wearer''s DMG.
+
+
+    Long ago, a group
+    of scientists discovered a material that returned any object that was infused
+    with it to its original state when struck with a destructive blow. It didn''t
+    take long for armies to realize it''s potential in wars.
+
+
+    "What happened
+    to the tank sir? I-It''s like nothing happened!"
+
+
+    "I infused it with Desolite.
+    It''s now, immortal."
+
+
+    "Think of it as... a memory foam property inducer.
+    The possibilities are endless."'
