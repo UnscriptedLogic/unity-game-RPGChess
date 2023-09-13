@@ -19,3 +19,5 @@ MonoBehaviour:
     speed: 3
   objectPrefab: {fileID: 5239201414176810281, guid: b54533126d3aefe41b34304401816612,
     type: 3}
+  relics:
+  - {fileID: 11400000, guid: 7bd286912f0f45a43af8aeddbdaf7a0c, type: 2}

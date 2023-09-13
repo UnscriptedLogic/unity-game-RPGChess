@@ -12,27 +12,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0f3787f60d9c1f45915c22ae01c8fb8, type: 3}
   m_Name: Desolate Piercer
   m_EditorClassIdentifier: 
-  statsModifier:
-    health: 0
-    damage: 4
-    speed: 0
+  level: 1
   icon: {fileID: 0}
-  description: 'An item that increases the wearer''s DMG.
+  quality: 4
+  description: 'In the distant past, some scientists stumbled upon a special substance
+    that could magically restore anything it touched to its original condition when
+    it was struck with a destructive blow. Soon enough, armies recognized its amazing
+    power on the battlefield.
 
 
-    Long ago, a group
-    of scientists discovered a material that returned any object that was infused
-    with it to its original state when struck with a destructive blow. It didn''t
-    take long for armies to realize it''s potential in wars.
+    "What happened to the tank sir? One minute it
+    was blown to smithereens, the next... it returned to the station perfectly intact!
+    I-It''s like nothing happened!"
 
 
-    "What happened
-    to the tank sir? I-It''s like nothing happened!"
+    "It''s infused with Desolite. It is now,
+    for a lack of a better term, immortal. Think of it as... a memory foam property
+    inducer."
 
 
-    "I infused it with Desolite.
-    It''s now, immortal."
+    "What happened to the crew inside of the tank?"
 
 
-    "Think of it as... a memory foam property inducer.
-    The possibilities are endless."'
+    "Did they
+    not make it back with the tank?"
+
+
+    "..."'
+  minLevelStats:
+    health: 0
+    damage: 2
+    speed: 0
+  maxLevelStats:
+    health: 0
+    damage: 12
+    speed: 0

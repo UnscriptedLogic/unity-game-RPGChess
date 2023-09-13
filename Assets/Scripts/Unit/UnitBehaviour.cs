@@ -64,19 +64,19 @@ public class UnitBehaviour : MonoBehaviour
     public Unit.Stats Stats => stats;
     public Cell CurrentCell => gridCells.GetCellFromWorldPosition(new Vector2(transform.position.x, transform.position.z));
 
-    public void Initialize(Unit unitData, Unit.Stats baseStats, ref TurnList<Turn> turns, ref TurnList<Turn> subTurns, ref Dictionary<Cell, GameObject> gridCells)
+    public void Initialize(Unit unitData, Unit.Stats stats, ref TurnList<Turn> turns, ref TurnList<Turn> subTurns, ref Dictionary<Cell, GameObject> gridCells)
     {
         levelController = LevelController.instance;
 
         this.unitData = unitData;
-        stats = new Unit.Stats(baseStats);
+        this.stats = stats;
 
         this.gridCells = gridCells;
 
         this.turns = turns;
         this.subTurns = subTurns;
 
-        stats.HealthHandler.OnEmpty += HealthHandler_OnEmpty;
+        this.stats.HealthHandler.OnEmpty += HealthHandler_OnEmpty;
 
         unitLayer = levelController.UnitLayer;
         highlightColor = levelController.HighLightColor;
