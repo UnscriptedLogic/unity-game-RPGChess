@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0f3787f60d9c1f45915c22ae01c8fb8, type: 3}
+  m_Name: Frontline Fortifiers
+  m_EditorClassIdentifier: 
+  level: 1
+  icon: {fileID: 0}
+  quality: 3
+  description: A well crafted piece of armor that brings about confidence and fortitude
+    to those who wear it.
+  minLevelStats:
+    health: 3
+    damage: 1
+    speed: 0
+  maxLevelStats:
+    health: 40
+    damage: 15
+    speed: 0
